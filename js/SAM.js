@@ -26,7 +26,8 @@ let dtheta; //dThetha/dt -> Velocidad angular!
 let dr; //dr/dt -> Velocidad hacia arriba o abajo!
 
 // Instante de tiempo. A más pequeño, más precisión tendrá la predicción,
-// pero más lento (obvio).
+// pero más lento (obvio). Si se dejan los valores por defecto, retorna r y theta
+// tras 10ms
 const dt = 0.001;
 const pasos = 10;
 const iteracion = () => {
@@ -45,10 +46,9 @@ const iteracion = () => {
         r      = r + dr*dt; 
     }
 
-    document.getElementById("r_value").innerHTML = r;
-    document.getElementById("theta_value").innerHTML = theta;
 
-    return {r,theta}
+
+    return {'r_i':r,'t_i':theta}
 }
 
 // función que toma los parámetros de los inputs y los añade a las variables
@@ -70,24 +70,32 @@ parar = false;
 function start(button,s=60) {
     getParams()
     let acum = [];
-    // Queremos que pasen 60 segundos. Está configurado para que tras iteracion
-    // pase 0.01 segundos. Necesitamos llamar a iteración 60/0.01 veces
+    // Queremos que pasen s segundos. Está configurado para que tras iteracion
+    // pase 0.01 segundos. Necesitamos llamar a iteración s/0.01 veces
     const iteraciones = s/(dt*pasos);           
+    
+    for(let j = 0; j<iteraciones; j++) {
+        acum.push(iteracion());   
+    }
+
     var i = 0;
-    console.log(iteraciones)
     function bucle() {         
-        setTimeout(function() {  
-            acum.push(iteracion());   
+        setTimeout(function() { 
+            let {r_i,t_i} = acum[i];   
             i++;                    
             if (i < iteraciones && !parar) {           
-                bucle();              
+                document.getElementById("r_value").innerHTML = r_i;
+                document.getElementById("theta_value").innerHTML = t_i; 
+                bucle();
             } else {
                 parar = false;
-            }                     
+            }           
         }, 10)
     }
 
     bucle();
+
+    return acum;
 }
 
 function restart() {
