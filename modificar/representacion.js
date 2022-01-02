@@ -1,13 +1,12 @@
 let sam;
 let actualizar = false;
+let recorrido;
 
 function setup() {
-    createCanvas(800, 600, WEBGL);
+    createCanvas(windowWidth, windowHeight, WEBGL);
     sam = new SAM();
     sam.getParams();
-    /*document.getElementById("simulate").onclick = actualizar = true;
-    document.getElementById("restart").onclick = sam.restart();
-    document.getElementById("stop").onclick = actualizar = false ;*/
+    recorrido = [];
     creaBotones();
 }
 
@@ -53,6 +52,7 @@ function draw() {
     pop();
 
     calculateNewPosition();
+    dibujaRecorrido();
 }
 
 
@@ -60,7 +60,6 @@ function calculateNewPosition(){
     if(actualizar){
         sam.iteracion();
     }
-
     let r = sam.r;
     let theta = sam.theta;
 
@@ -71,14 +70,12 @@ function calculateNewPosition(){
     x = (r*sin(theta))*100;
     y = (r*cos(theta))*100;
 
-
-    push();
-    stroke(color(200, 0, 0));
-    beginShape(POINTS);
-    noFill();
-    endShape();
-    pop();
-
+    if(actualizar){
+        recorrido.push([x, y]);
+        if(recorrido.length>1000000){
+            recorrido.pop();
+        }
+    }
 
     push();
     noStroke();
@@ -105,10 +102,13 @@ function calculateNewPosition(){
 }
 
 
-function drawTransition(){
+function dibujaRecorrido(){
     beginShape(POINTS);
-    stroke(color(160, 160, 150));
-    //Vertices
+    stroke(color(200, 0, 0));
+    for(let i = 0; i < recorrido.length ; ++i){
+        pt = recorrido[i];
+        vertex(320+pt[0], -80+pt[1]);
+    }
     endShape();
 }
 
@@ -120,11 +120,11 @@ function creaBotones(){
     stroke(color(160, 160, 150));
     start_button = createButton("Start");
     start_button.mouseClicked(toggleSketch);
-    start_button.position(0,500);
+    start_button.position(20,500);
 
     reset_button = createButton("Reset");
     reset_button.html("reset");
-    reset_button.position(0, 450);
+    reset_button.position(20, 450);
     reset_button.mousePressed(resetButton);
     pop();
 }
