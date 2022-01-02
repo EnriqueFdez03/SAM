@@ -5,9 +5,10 @@ function setup() {
     createCanvas(800, 600, WEBGL);
     sam = new SAM();
     sam.getParams();
-    document.getElementById("simulate").onclick = actualizar = true;
+    /*document.getElementById("simulate").onclick = actualizar = true;
     document.getElementById("restart").onclick = sam.restart();
-    document.getElementById("stop").onclick = sam.parar = false ;
+    document.getElementById("stop").onclick = actualizar = false ;*/
+    creaBotones();
 }
 
 
@@ -59,15 +60,16 @@ function calculateNewPosition(){
     if(actualizar){
         sam.iteracion();
     }
+
     let r = sam.r;
     let theta = sam.theta;
 
 
     let largo = 2 - r;
-    largo = largo < 0 ? 0 : (largo/**3780/600*/);
+    largo = largo < 0 ? 0 : (largo*100);
 
-    x = (r*sin(theta))/**3780/600*/;
-    y = (-r*cos(theta))/**3780/600*/;
+    x = (r*sin(theta))*100;
+    y = (r*cos(theta))*100;
 
 
     push();
@@ -108,4 +110,39 @@ function drawTransition(){
     stroke(color(160, 160, 150));
     //Vertices
     endShape();
+}
+
+
+function creaBotones(){
+    push();
+    ambientLight(100, 100, 100);
+    pointLight(250, 250, 250, 1000, 1000, 100);
+    stroke(color(160, 160, 150));
+    start_button = createButton("Start");
+    start_button.mouseClicked(toggleSketch);
+    start_button.position(0,500);
+
+    reset_button = createButton("Reset");
+    reset_button.html("reset");
+    reset_button.position(0, 450);
+    reset_button.mousePressed(resetButton);
+    pop();
+}
+
+
+function toggleSketch() {
+    if(actualizar) {
+      start_button.html("start");
+      actualizar = false;
+    } else {
+      start_button.html("stop");
+      actualizar = true;
+    }
+}
+
+function resetButton() {
+    if(actualizar) {
+      toggleSketch();
+    }
+    sam = new SAM();
 }

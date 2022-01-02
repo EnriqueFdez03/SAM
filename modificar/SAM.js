@@ -32,8 +32,8 @@ class SAM{
         // Instante de tiempo. A más pequeño, más precisión tendrá la predicción,
         // pero más lento (obvio). Si se dejan los valores por defecto, retorna r y theta
         // tras 10ms
-        const dt = 0.001;
-        const pasos = 10;
+        this.dt = 0.001;
+        this.pasos = 10;
     }
 
     iteracion() {
@@ -46,7 +46,7 @@ class SAM{
             this.dtheta   = this.p_theta/(this.m*Math.pow(this.r,2));
             this.theta    = this.theta + this.dtheta*this.dt;
             // obtención de r
-            this.dp_r   = (Math.pow(this.p_theta,2)/(this.m*Math.pow(this.r,3))) + this.m*this.g*Math.cos(this.theta) - M*this.g;
+            this.dp_r   = (Math.pow(this.p_theta,2)/(this.m*Math.pow(this.r,3))) + this.m*this.g*Math.cos(this.theta) - this.M*this.g;
             this.p_r    = this.p_r + this.dp_r*this.dt;
             this.dr     = this.p_r/(this.m+this.M);
             this.r      = this.r + this.dr*this.dt; 
