@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <script src="p5/p5.js"></script>
+        <script src="representacion.js"></script>
+        <script src="SAM.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <span>M:</span><input id="M" type="text" placeholder="Masa contrapeso" value="2"/>
+            <span>m:</span><input id="m" type="text" placeholder="Masa oscilante" value="1"/>
+            <span>&theta;<sub>0</sub>:</span><input id="theta" type="text" placeholder="Ángulo incial" value="1.57079632679"/>
+            <span>r<sub>0</sub>:</span><input id="r" type="text" placeholder="Distancia oscilante" value="1"/>
+            <span>&theta;&#775:</span><input id="dtheta" type="text" placeholder="Velocidad angular inicial (rad/s)" value="0"/>
+            <span>r&#775:</span><input id="dr" type="text" placeholder="Velocidad polea (m/s)" value="0"/>
+            <br>
+            <button id = "simulate">Start</button>
+            <button id = "restart">Restart</button>
+            <button id = "stop">Stop</button>
+        </div>
+    </body>
+</html>
