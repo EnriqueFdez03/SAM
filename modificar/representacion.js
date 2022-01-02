@@ -28,8 +28,17 @@ function draw() {
     ambientMaterial(color(204, 42, 0));
     rotate(2.35619)
     rect(-50, -50, 20, 100);
+    pop();
 
+    push();
+    rotate(2.35619)
+    ambientMaterial(color(163, 73, 164, 255));
+    circle(-40, 52, 30);
+    pop();
+
+    push();
     noStroke();
+    rotate(2.35619)
     ambientMaterial(color(130,130,130));
     circle(-40, 50, 30);
     pop();
@@ -40,15 +49,25 @@ function draw() {
     noStroke();
     ambientMaterial(color(204, 42, 0));
     rect(160, -250, 20, 100);
-
-    noStroke();
-    ambientMaterial(color(130,130,130));
-    circle(170, -260, 30);
     pop();
 
     push();
+    rotate(0.785398)
+    ambientMaterial(color(163, 73, 164, 255));
+    circle(170, -262, 30);
+    pop();
+
+    push();
+    rotate(0.785398)
+    noStroke();
+    ambientMaterial(color(130,130,130,255));
+    circle(170, -260, 30);
+    pop();
+
+
+    push();
     stroke(163, 73, 164);
-    line(-20,-80,320,-80);
+    line(-23,-79,320,-79);
     pop();
 
     calculateNewPosition();
@@ -81,35 +100,38 @@ function calculateNewPosition(){
     noStroke();
     ambientMaterial(color(255, 0, 0));
     //Pasar los parámetros del cálculo para actualizar las coordenadas de la bola "pequeña"
-    circle(320+x, -80+y,20);
+    circle(320+x, -79+y,20);
     pop();
   
     push();
     noStroke();
     ambientMaterial(color(0, 0, 255));
     //Pasar los parámetros del cálculo para actualizar las coordenadas de la bola "grande"
-    circle(-20,-80+largo,35);
+    circle(-23,-79+largo,35);
     pop();
   
     push();
     stroke(color(163, 73, 164));
     // Cuerda a la bola pequeña
-    line(320+x, -80+y, 320, -80);
+    line(320+x, -79+y, 320, -79);
     // Cuerda a la bola grande
-    line(-20, -80+largo, -20, -80);
+    line(-23, -79+largo, -23, -79);
     pop();
   
 }
 
 
 function dibujaRecorrido(){
-    beginShape(POINTS);
+    push();
+    beginShape();
+    noFill();
     stroke(color(200, 0, 0));
     for(let i = 0; i < recorrido.length ; ++i){
         pt = recorrido[i];
-        vertex(320+pt[0], -80+pt[1]);
+        vertex(320+pt[0], -79+pt[1]);
     }
     endShape();
+    pop();
 }
 
 
@@ -123,7 +145,6 @@ function creaBotones(){
     start_button.position(20,500);
 
     reset_button = createButton("Reset");
-    reset_button.html("reset");
     reset_button.position(20, 450);
     reset_button.mousePressed(resetButton);
     pop();
@@ -132,10 +153,10 @@ function creaBotones(){
 
 function toggleSketch() {
     if(actualizar) {
-      start_button.html("start");
+      start_button.html("Start");
       actualizar = false;
     } else {
-      start_button.html("stop");
+      start_button.html("Stop");
       actualizar = true;
     }
 }
@@ -145,4 +166,7 @@ function resetButton() {
       toggleSketch();
     }
     sam = new SAM();
+    sam.getParams();
+    recorrido = [];
+    creaBotones();
 }
