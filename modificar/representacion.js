@@ -141,17 +141,17 @@ function creaBotones(){
     pointLight(250, 250, 250, 1000, 1000, 100);
     stroke(color(160, 160, 150));
     start_button = createButton("Start");
-    start_button.mouseClicked(toggleSketch);
-    start_button.position(20,500);
+    start_button.mouseClicked(startStop);
+    start_button.position(650,100);
 
     reset_button = createButton("Reset");
-    reset_button.position(20, 450);
+    reset_button.position(700, 100);
     reset_button.mousePressed(resetButton);
     pop();
 }
 
 
-function toggleSketch() {
+function startStop() {
     if(actualizar) {
       start_button.html("Start");
       actualizar = false;
@@ -163,7 +163,7 @@ function toggleSketch() {
 
 function resetButton() {
     if(actualizar) {
-      toggleSketch();
+      startStop();
     }
     sam = new SAM();
     sam.getParams();
