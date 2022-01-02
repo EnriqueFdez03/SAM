@@ -6,7 +6,7 @@ class SAM{
     // --- VARIABLES INICIALES ---
     constructor(){
         this.M; // M: Masa del contrapeso. 
-        this.m; // m: Masa de la bola oscilante.
+        this.m = 1; // m: Masa de la bola oscilante.
         this.g = 9.8; // Gravedad
         this.r0; // Distancia de la bola oscilante de la polea.
         this.theta0; // Angulo de la bola oscilante con la vertical
@@ -59,8 +59,7 @@ class SAM{
 
     // función que toma los parámetros de los inputs y los añade a las variables
     getParams(){
-        this.M = parseFloat(document.getElementById("M").value); 
-        this.m = parseFloat(document.getElementById("m").value); 
+        this.M = parseFloat(document.getElementById("mu").value); 
         this.r = parseFloat(document.getElementById("r").value); 
         this.theta = parseFloat(document.getElementById("theta").value); 
         this.r0 = parseFloat(document.getElementById("r").value); 

@@ -5,7 +5,7 @@
 // --- VARIABLES INICIALES ---
 
 let M; // M: Masa del contrapeso. 
-let m; // m: Masa de la bola oscilante.
+let m = 1; // m: Masa de la bola oscilante.
 let g = 9.8; // Gravedad
 let r0; // Distancia de la bola oscilante de la polea.
 let theta0; // Angulo de la bola oscilante con la vertical
@@ -53,8 +53,7 @@ const iteracion = () => {
 
 // función que toma los parámetros de los inputs y los añade a las variables
 const getParams = () => {
-    M = parseFloat(document.getElementById("M").value); 
-    m = parseFloat(document.getElementById("m").value); 
+    M = parseFloat(document.getElementById("mu").value); 
     r = parseFloat(document.getElementById("r").value); 
     theta = parseFloat(document.getElementById("theta").value); 
     r0 = parseFloat(document.getElementById("r").value); 
