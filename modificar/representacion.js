@@ -3,26 +3,31 @@ let actualizar = false;
 let recorrido;
 
 function setup() {
-    createCanvas(windowWidth, windowHeight, WEBGL);
+    createCanvas(document.body.clientWidth, window.innerHeight, WEBGL);
     sam = new SAM();
     sam.getParams();
     recorrido = [];
     creaBotones();
 }
 
-
+let escala = 1;
 function draw() {
+    scale(escala);
+
+    
     background(0);
 
     ambientLight(100, 100, 100);
     pointLight(250, 250, 250, 1000, 1000, 100);
 
+    //base poleas
     push();
     ambientMaterial(color(204, 42, 0));
     noStroke();
-    translate(-130, 0);
+    translate(-150, 0);
     rect(0, 0, 300, 50);
 
+    // resorte polea 1
     push();
     noStroke();
     ambientMaterial(color(204, 42, 0));
@@ -30,9 +35,11 @@ function draw() {
     rect(-50, -50, 20, 100);
     pop();
 
+    //polea 1
     push();
     rotate(2.35619)
     ambientMaterial(color(163, 73, 164, 255));
+    
     circle(-40, 52, 30);
     pop();
 
@@ -43,7 +50,7 @@ function draw() {
     circle(-40, 50, 30);
     pop();
 
-
+    // resorte polea 2
     push();
     rotate(0.785398)
     noStroke();
@@ -51,6 +58,7 @@ function draw() {
     rect(160, -250, 20, 100);
     pop();
 
+    // polea 2
     push();
     rotate(0.785398)
     ambientMaterial(color(163, 73, 164, 255));
@@ -64,7 +72,7 @@ function draw() {
     circle(170, -260, 30);
     pop();
 
-
+    //cuerda
     push();
     stroke(163, 73, 164);
     line(-23,-79,320,-79);
@@ -81,8 +89,7 @@ function calculateNewPosition(){
     }
     let r = sam.r;
     let theta = sam.theta;
-
-
+    // para limitar la subida de la bola grande
     let largo = 2 - r;
     largo = largo < 0 ? 0 : (largo*100);
 
@@ -147,10 +154,18 @@ function creaBotones(){
     reset_button = createButton("Reset");
     reset_button.position(700, 100);
     reset_button.mousePressed(resetButton);
+
+    zoomIn_button = createButton("+");
+    zoomIn_button.position(750, 100);
+    zoomIn_button.mousePressed(zoomIn);
+
+    zoomOut_button = createButton("-");
+    zoomOut_button.position(780, 100);
+    zoomOut_button.mousePressed(zoomOut);
     pop();
 }
 
-
+// Button events
 function startStop() {
     if(actualizar) {
       start_button.html("Start");
@@ -170,3 +185,24 @@ function resetButton() {
     recorrido = [];
     creaBotones();
 }
+
+function zoomIn() {
+    escala = Math.min(2, escala+0.1);
+}
+
+function zoomOut() {
+    escala = Math.max(0.1, escala-0.1);
+}
+// si se cambian los parámetros del SAM...
+function paramsChange(e) {
+    console.log("hola")
+    if (e.keyCode === 13) {
+        resetButton();
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementsByTagName('input').forEach(element => {
+        element.addEventListener('keyup',paramsChange);
+    });
+});
