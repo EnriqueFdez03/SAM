@@ -96,7 +96,22 @@ class SAM{
         this.theta = this.theta0.valueOf();
         this.dr = this.dr0.valueOf();
         this.dtheta = this.dtheta0.valueOf();
-        this.start();
+        this.
+        start();
+    }
+
+    // retorna la distancia euclídea con otro sam pasado como parámetro
+    distance(sam1) {
+        let r1 = sam1.r; 
+        let theta1 = sam1.theta;
+
+        let x1 = (r1*sin(theta1));
+        let y1 = (r1*cos(theta1));
+
+        let x = (this.r*sin(this.theta));
+        let y = (this.r*cos(this.theta));
+
+        return Math.sqrt(Math.pow((x-x1),2) + Math.pow((y-y1),2))
     }
 }
 

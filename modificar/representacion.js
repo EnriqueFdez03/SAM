@@ -4,6 +4,7 @@ let sam2enabled = false;
 let actualizar = false;
 let recorrido;
 let recorrido2;
+let sensitivityMode = false;
 let hideSAM = false;
 
 function setup() {
@@ -52,7 +53,7 @@ function pulleyBase() {
     //base poleas
     push();
     ambientMaterial(color(204, 42, 0));
-    noStroke();
+    
     
     rect(0, 0, 300, 50);
 
@@ -73,7 +74,7 @@ function pulleyBase() {
     pop();
 
     push();
-    noStroke();
+    //noStroke();
     rotate(2.35619)
     ambientMaterial(color(130,130,130));
     circle(-40, 50, 30);
@@ -96,7 +97,6 @@ function pulleyBase() {
 
     push();
     rotate(0.785398)
-    noStroke();
     ambientMaterial(color(130,130,130,255));
     circle(170, -260, 30);
     pop();
@@ -155,19 +155,17 @@ function calculateNewPosition(){
 
 function drawMasses(x,y,x2,y2,largo,largo2) {
     push();
-    noStroke();
     ambientMaterial(color(255, 0, 0));
     //Pasar los parámetros del cálculo para actualizar las coordenadas de la bola "pequeña"
     circle(320+x, -79+y,20);
     pop();
   
     push();
-    noStroke();
     ambientMaterial(color(0, 0, 255));
     //Pasar los parámetros del cálculo para actualizar las coordenadas de la bola "grande"
     circle(-23,-79+largo,35);
     pop();
-  
+
     push();
     stroke(color(163, 73, 164));
     // Cuerda a la bola pequeña
@@ -175,28 +173,27 @@ function drawMasses(x,y,x2,y2,largo,largo2) {
     // Cuerda a la bola grande
     line(-23, -79+largo, -23, -79);
     pop();
+    
 
     if(sam2enabled) {
-        push();
-        noStroke();
-        ambientMaterial(color(255, 0, 0));
-        //Pasar los parámetros del cálculo para actualizar las coordenadas de la bola "pequeña"
-        circle(320+x2, -79+y2,20);
-        pop();
-      
-        push();
-        noStroke();
-        ambientMaterial(color(0, 0, 255));
-        //Pasar los parámetros del cálculo para actualizar las coordenadas de la bola "grande"
-        circle(-23,-79+largo2,35);
-        pop();
-      
         push();
         stroke(color(163, 73, 164));
         // Cuerda a la bola pequeña
         line(320+x2, -79+y2, 320, -79);
         // Cuerda a la bola grande
         line(-23, -79+largo2, -23, -79);
+        pop();
+
+        push();
+        ambientMaterial(color(0, 140, 23));
+        //Pasar los parámetros del cálculo para actualizar las coordenadas de la bola "pequeña"
+        circle(320+x2, -79+y2,20);
+        pop();
+      
+        push();
+        ambientMaterial(color(184, 184, 0));
+        //Pasar los parámetros del cálculo para actualizar las coordenadas de la bola "grande"
+        circle(-23,-79+largo2,35);
         pop();
     }
 }
@@ -275,11 +272,14 @@ function resetButton() {
         sam2 = new SAM();
         sam2.getParams(true);
         recorrido2 = [];
+
+        let epsilon = sam2.distance(sam);
+        document.getElementById("epsilon").innerHTML = epsilon.toFixed(14);
     }
 }
 
 function zoomIn() {
-    escala = Math.min(2, escala+0.1);
+    escala = Math.min(3, escala+0.1);
 }
 
 function zoomOut() {
@@ -298,16 +298,20 @@ function enableSam2() {
     document.getElementsByTagName("input").forEach(e => {
         e.disabled = false;
     });
+    document.getElementsByClassName("subtitle")[0].classList.remove("disabled");
+
     setup2();
     resetButton();
 }
 
 function disableSam2() {
     document.getElementsByTagName("input").forEach(e => {
-        if(e.id.includes("2")&&e.type=="text") {
+        if(e.id.includes("2")&&e.type=="text" || e.className.includes("sensibility")) {
             e.disabled = true;
         }
     });
+    document.getElementsByClassName("subtitle")[0].classList.add("disabled");
+
     sam2enabled = false;
     sam2 = new SAM(true);
     recorrido2 = [];
@@ -315,6 +319,9 @@ function disableSam2() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById('sam2enabled').checked = false;
+    document.getElementById('Sensibilidad').checked = false;
+    
     document.getElementsByTagName('input').forEach(element => {
         element.addEventListener('keyup',paramsChange);
     });
