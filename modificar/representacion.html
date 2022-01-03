@@ -11,11 +11,21 @@
         <input type="checkbox" class="checkbox" id="menu-toogle"/>
         <label for="menu-toogle" class="menu-toogle"></label>
         <nav class="nav">
-            <span class="nav__item">&mu; :</span><input id="mu" type="text" placeholder="Masa contrapeso" value="2"/>
-            <span class="nav__item">&theta;<sub>0</sub> :</span><input id="theta" type="text" placeholder="Ángulo incial" value="1.57079632679"/>
-            <span class="nav__item">r<sub>0</sub> :</span><input id="r" type="text" placeholder="Distancia oscilante" value="1"/>
-            <span class="nav__item">&theta;&#775 :</span><input id="dtheta" type="text" placeholder="Velocidad angular inicial (rad/s)" value="0"/>
-            <span class="nav__item">r&#775 :</span><input id="dr" type="text" placeholder="Velocidad polea (m/s)" value="0"/>
+            <p class="title">SAM 1</p>
+            <span class="nav__item">&mu; <input id="mu" type="text" placeholder="Masa contrapeso" value="2"/></span>
+            <span class="nav__item">&theta;<sub>0</sub> <input id="theta" type="text" placeholder="Ángulo incial" value="1.57079632679"/></span>
+            <span class="nav__item">r<sub>0</sub> <input id="r" type="text" placeholder="Distancia oscilante" value="1"/></span>
+            <span class="nav__item">&theta;&#775 <input id="dtheta" type="text" placeholder="Velocidad angular inicial (rad/s)" value="0"/></span>
+            <span class="nav__item">r&#775 <input id="dr" type="text" placeholder="Velocidad polea (m/s)" value="0"/></span>
+    
+            <p class="title"><input type="checkbox" id="sam2enabled"> SAM 2</p>
+            <span class="nav__item">&mu; <input id="mu2" type="text" placeholder="Masa contrapeso" value="2" disabled/></span>
+            <span class="nav__item">&theta;<sub>0</sub> <input id="theta2" type="text" placeholder="Ángulo incial" value="1.57079632679"  disabled/></span>
+            <span class="nav__item">r<sub>0</sub> <input id="r2" type="text" placeholder="Distancia oscilante" value="1"  disabled/></span>
+            <span class="nav__item">&theta;&#775 <input id="dtheta2" type="text" placeholder="Velocidad angular inicial (rad/s)" value="0"  disabled/></span>
+            <span class="nav__item">r&#775 <input id="dr2" type="text" placeholder="Velocidad polea (m/s)" value="0"  disabled/></span>
+
+            <p class="title">AJUSTES</p>
             <span class="nav__item">Solo órbita: <input type="checkbox" id="onlyOrbit"></span>
         </nav>
     </body>

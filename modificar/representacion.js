@@ -1,6 +1,9 @@
 let sam;
+let sam2;
+let sam2enabled = false;
 let actualizar = false;
 let recorrido;
+let recorrido2;
 let hideSAM = false;
 
 function setup() {
@@ -11,6 +14,13 @@ function setup() {
     creaBotones();
 }
 
+function setup2() {
+    sam2enabled = true;
+    sam2 = new SAM();
+    sam2.getParams(true);
+    recorrido2 = [];
+}
+
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
 }
@@ -19,7 +29,6 @@ let escala = 1;
 let translationx = 0, translationy = 0;
 function draw() {
     scale(escala);
-
     background(0);
     ambientLight(100, 100, 100);
     pointLight(250, 250, 250, 1000, 1000, 100);
@@ -32,6 +41,14 @@ function draw() {
         dibujaRecorrido();
         return;
     }
+
+    
+    pulleyBase();
+    calculateNewPosition();
+    dibujaRecorrido();
+}
+
+function pulleyBase() {
     //base poleas
     push();
     ambientMaterial(color(204, 42, 0));
@@ -89,11 +106,7 @@ function draw() {
     stroke(163, 73, 164);
     line(-23,-79,320,-79);
     pop();
-
-    calculateNewPosition();
-    dibujaRecorrido();
 }
-
 
 function calculateNewPosition(){
     if(actualizar){
@@ -101,22 +114,46 @@ function calculateNewPosition(){
     }
     let r = sam.r;
     let theta = sam.theta;
-    // para limitar la subida de la bola grande
-    let largo = 2 - r;
-    largo = largo < 0 ? 0 : (largo*100);
 
-    x = (r*sin(theta))*100;
-    y = (r*cos(theta))*100;
+    let x = (r*sin(theta))*100;
+    let y = (r*cos(theta))*100;
+
+    let x2, y2, r2, theta2;
+    if (sam2enabled) {
+        if(actualizar){
+            sam2.iteracion();
+        }
+        r2 = sam2.r;
+        theta2 = sam2.theta;
+
+        x2 = (r2*sin(theta2))*100;
+        y2 = (r2*cos(theta2))*100;
+    }
 
     if(actualizar){
         recorrido.push([x, y]);
+        if (sam2enabled) {
+            recorrido2.push([x2,y2]);
+        }
         if(recorrido.length>1000000){
             recorrido.pop();
+            if (sam2enabled) {
+                recorrido2.pop();
+            }
         }
     }
 
     if(hideSAM) {return}
 
+    // para limitar la subida de la bola grande
+    let largo = 2 - r;
+    largo = largo < 0 ? 0 : (largo*100);
+    let largo2 = 2 - r2;
+    largo2 = largo2 < 0 ? 0 : (largo2*100);
+    drawMasses(x,y,x2,y2,largo,largo2);
+}
+
+function drawMasses(x,y,x2,y2,largo,largo2) {
     push();
     noStroke();
     ambientMaterial(color(255, 0, 0));
@@ -138,7 +175,30 @@ function calculateNewPosition(){
     // Cuerda a la bola grande
     line(-23, -79+largo, -23, -79);
     pop();
-  
+
+    if(sam2enabled) {
+        push();
+        noStroke();
+        ambientMaterial(color(255, 0, 0));
+        //Pasar los parámetros del cálculo para actualizar las coordenadas de la bola "pequeña"
+        circle(320+x2, -79+y2,20);
+        pop();
+      
+        push();
+        noStroke();
+        ambientMaterial(color(0, 0, 255));
+        //Pasar los parámetros del cálculo para actualizar las coordenadas de la bola "grande"
+        circle(-23,-79+largo2,35);
+        pop();
+      
+        push();
+        stroke(color(163, 73, 164));
+        // Cuerda a la bola pequeña
+        line(320+x2, -79+y2, 320, -79);
+        // Cuerda a la bola grande
+        line(-23, -79+largo2, -23, -79);
+        pop();
+    }
 }
 
 
@@ -148,11 +208,24 @@ function dibujaRecorrido(){
     noFill();
     stroke(color(200, 0, 0));
     for(let i = 0; i < recorrido.length ; ++i){
-        pt = recorrido[i];
+        let pt = recorrido[i];
         vertex(320+pt[0], -79+pt[1]);
     }
     endShape();
     pop();
+
+    if(sam2enabled) {
+        push();
+        beginShape();
+        noFill();
+        stroke(color(0, 200, 0));
+        for(let i = 0; i < recorrido.length ; ++i){
+            let pt2 = recorrido2[i];
+            vertex(320+pt2[0], -79+pt2[1]);
+        }
+        endShape();
+        pop();
+    }
 }
 
 function creaBotones(){
@@ -197,6 +270,12 @@ function resetButton() {
     sam.getParams();
     recorrido = [];
     creaBotones();
+
+    if (sam2enabled) {
+        sam2 = new SAM();
+        sam2.getParams(true);
+        recorrido2 = [];
+    }
 }
 
 function zoomIn() {
@@ -214,6 +293,27 @@ function paramsChange(e) {
     }
 }
 
+//listeners de sam2..
+function enableSam2() {
+    document.getElementsByTagName("input").forEach(e => {
+        e.disabled = false;
+    });
+    setup2();
+    resetButton();
+}
+
+function disableSam2() {
+    document.getElementsByTagName("input").forEach(e => {
+        if(e.id.includes("2")&&e.type=="text") {
+            e.disabled = true;
+        }
+    });
+    sam2enabled = false;
+    sam2 = new SAM(true);
+    recorrido2 = [];
+    resetButton();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementsByTagName('input').forEach(element => {
         element.addEventListener('keyup',paramsChange);
@@ -224,6 +324,13 @@ document.addEventListener("DOMContentLoaded", () => {
             hideSAM = true;
         } else {
             hideSAM = false;
+        }
+    });
+    document.getElementById("sam2enabled").addEventListener('change', function() {
+        if(this.checked) {
+            enableSam2();
+        } else {
+            disableSam2();
         }
     });
 });

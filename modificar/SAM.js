@@ -4,6 +4,7 @@ class SAM{
     // primer orden frente a Euler-Lagrange, que son de segundo orden.
 
     // --- VARIABLES INICIALES ---
+
     constructor(){
         this.M; // M: Masa del contrapeso. 
         this.m = 1; // m: Masa de la bola oscilante.
@@ -58,16 +59,20 @@ class SAM{
     }
 
     // función que toma los parámetros de los inputs y los añade a las variables
-    getParams(){
-        this.M = parseFloat(document.getElementById("mu").value); 
-        this.r = parseFloat(document.getElementById("r").value); 
-        this.theta = parseFloat(document.getElementById("theta").value); 
-        this.r0 = parseFloat(document.getElementById("r").value); 
-        this.theta0 = parseFloat(document.getElementById("theta").value); 
-        this.dr = parseFloat(document.getElementById("dr").value); 
-        this.dtheta = parseFloat(document.getElementById("dtheta").value); 
-        this.dr0 = parseFloat(document.getElementById("dr").value); 
-        this.dtheta0 = parseFloat(document.getElementById("dtheta").value); 
+    getParams(second){
+        let ids = ["mu","r","theta","dr","dtheta"]
+        if (second) {
+            ids = ids.map(id => `${id}2`);
+        }
+        this.M = parseFloat(document.getElementById(ids[0]).value); 
+        this.r = parseFloat(document.getElementById(ids[1]).value); 
+        this.theta = parseFloat(document.getElementById(ids[2]).value); 
+        this.r0 = parseFloat(document.getElementById(ids[1]).value); 
+        this.theta0 = parseFloat(document.getElementById(ids[2]).value); 
+        this.dr = parseFloat(document.getElementById(ids[3]).value); 
+        this.dtheta = parseFloat(document.getElementById(ids[4]).value); 
+        this.dr0 = parseFloat(document.getElementById(ids[3]).value); 
+        this.dtheta0 = parseFloat(document.getElementById(ids[4]).value); 
 
         this.p_r = this.dr*(this.m+this.M);
         this.p_theta = this.m*this.dtheta*Math.pow(this.r,2);
