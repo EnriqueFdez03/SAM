@@ -1,30 +1,42 @@
 let sam;
 let actualizar = false;
 let recorrido;
+let hideSAM = false;
 
 function setup() {
-    createCanvas(document.body.clientWidth, window.innerHeight, WEBGL);
+    createCanvas(windowWidth, windowHeight, WEBGL);
     sam = new SAM();
     sam.getParams();
     recorrido = [];
     creaBotones();
 }
 
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+}
+
 let escala = 1;
+let translationx = 0, translationy = 0;
 function draw() {
     scale(escala);
 
-    
     background(0);
-
     ambientLight(100, 100, 100);
     pointLight(250, 250, 250, 1000, 1000, 100);
+    //console.log(translationx,translationy)
+    translate(-150+translationx, 0+translationy);
 
+    if(hideSAM) {
+        translate(-170, 0);
+        calculateNewPosition();
+        dibujaRecorrido();
+        return;
+    }
     //base poleas
     push();
     ambientMaterial(color(204, 42, 0));
     noStroke();
-    translate(-150, 0);
+    
     rect(0, 0, 300, 50);
 
     // resorte polea 1
@@ -103,6 +115,8 @@ function calculateNewPosition(){
         }
     }
 
+    if(hideSAM) {return}
+
     push();
     noStroke();
     ambientMaterial(color(255, 0, 0));
@@ -140,7 +154,6 @@ function dibujaRecorrido(){
     endShape();
     pop();
 }
-
 
 function creaBotones(){
     push();
@@ -193,9 +206,9 @@ function zoomIn() {
 function zoomOut() {
     escala = Math.max(0.1, escala-0.1);
 }
+
 // si se cambian los parámetros del SAM...
 function paramsChange(e) {
-    console.log("hola")
     if (e.keyCode === 13) {
         resetButton();
     }
@@ -205,4 +218,45 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementsByTagName('input').forEach(element => {
         element.addEventListener('keyup',paramsChange);
     });
+    //mostrar sólo órbita
+    document.getElementById("onlyOrbit").addEventListener('change', function() {
+        if(this.checked) {
+            hideSAM = true;
+        } else {
+            hideSAM = false;
+        }
+    });
 });
+
+//mover figura
+const min=-50,max=50;
+document.addEventListener('keydown',(t) => {
+    //izq
+    if (t.key=="ArrowLeft") {
+        translationx -= 5;
+    //arriba
+    } else if(t.key=="ArrowDown") {
+        translationy += 5;
+    //dcha
+    } else if(t.key=="ArrowRight") {
+        translationx += 5;
+    //abajo
+    } else if(t.key=="ArrowUp") {
+        translationy -= 5;
+    }
+});
+
+//evento de zoom pero con scroll
+document.addEventListener("wheel", (e) => {
+    if (e.deltaY < 0)
+    {
+        zoomIn();
+    }
+    else if (e.deltaY > 0)
+    {
+        zoomOut();
+    }
+});
+
+
+
