@@ -4,7 +4,7 @@
   "description": "Swinging Atwood's Machine simulation",
   "main": "index.js",
   "scripts": {
-    "test": "deploy : gh-pages -d build"
+    "deploy": "gh-pages -d build"
   },
   "repository": {
     "type": "git",
