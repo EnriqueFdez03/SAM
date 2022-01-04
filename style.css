@@ -30,6 +30,23 @@ body {
     color:rgba(221, 231, 228, 1);
 }
 
+#info {
+    color: white;
+    position: relative;
+    background-color: rgb(66, 66, 66);
+    border-radius: 3px;
+    display: inline-block;
+    padding: 5px 8px;
+    left: 41vw;
+    top: 90vh;
+    font-family: 'Lato', sans-serif;
+    color:rgba(221, 231, 228, 1);
+}
+
+#distance {
+    margin-left: 5px;
+}
+
 .title {
     text-align: center;
     color: rgba(221, 231, 228, 1);

@@ -4,8 +4,8 @@ let sam2enabled = false;
 let actualizar = false;
 let recorrido;
 let recorrido2;
-let sensitivityMode = false;
 let delta;
+let sensitivityMode = false;
 let hideSAM = false;
 
 
@@ -64,11 +64,9 @@ function draw() {
     background(0);
     ambientLight(100, 100, 100);
     pointLight(250, 250, 250, 1000, 1000, 100);
-    //console.log(translationx,translationy)
     translate(-150+translationx, 0+translationy);
 
     if(hideSAM) {
-        translate(-170, 0);
         calculateNewPosition();
         dibujaRecorrido();
         return;
@@ -139,9 +137,13 @@ function pulleyBase() {
     pop();
 }
 
+let lenRecorrido = 100000000;
+let tiempo = 0;
 function calculateNewPosition(){
     if(actualizar){
         sam.iteracion();
+        tiempo += 0.01;
+        document.getElementById("time").innerHTML = `Tiempo: ${tiempo.toFixed(3)}s`;
     }
 
 
@@ -155,9 +157,16 @@ function calculateNewPosition(){
     if (sam2enabled) {
         if(actualizar){
             sam2.iteracion();
+            if(!sensitivityMode) {
+                document.getElementById("distance").innerHTML = "";
+            }
         }
 
         distance = sam.distance(sam2);
+        
+        if (sensitivityMode) {
+            document.getElementById("distance").innerHTML = `Distancia ${distance.toFixed(4)} metros`
+        }
         
         r2 = sam2.r;
         theta2 = sam2.theta;
@@ -165,10 +174,9 @@ function calculateNewPosition(){
         x2 = (r2*sin(theta2))*100;
         y2 = (r2*cos(theta2))*100;
 
-        if (distance > delta && sensitivityMode) {
-            console.log("hola")
-            disableSensitivity();
+        if (distance > delta && sensitivityMode && actualizar) {
             startStop();
+            disableSensitivity(false);
         }
     }
 
@@ -177,7 +185,7 @@ function calculateNewPosition(){
         if (sam2enabled) {
             recorrido2.push([x2,y2]);
         }
-        if(recorrido.length>10){
+        if(recorrido.length>lenRecorrido){
             recorrido.shift();
             if (sam2enabled) {
                 recorrido2.shift();
@@ -310,6 +318,8 @@ function startStop() {
 }
 
 function resetButton() {
+    tiempo = 0;
+
     if(actualizar) {
       startStop();
     }
@@ -325,15 +335,11 @@ function resetButton() {
 
         let epsilon = sam2.distance(sam);
         document.getElementById("epsilon").innerHTML = epsilon.toFixed(14);
-
-        if(sensitivityMode) {
-            delta = parseFloat(document.getElementById("delta").value);
-        }
     }
 }
 
 function zoomIn() {
-    escala = Math.min(4, escala+0.1);
+    escala = Math.min(6, escala+0.1);
 }
 
 function zoomOut() {
@@ -342,7 +348,14 @@ function zoomOut() {
 
 // si se cambian los parámetros del SAM...
 function paramsChange(e) {
-    if (e.keyCode === 13) {
+    if (e.keyCode === 13) 
+        disableSensitivity();{
+        let mu = document.getElementById("mu");
+        let mu2 = document.getElementById("mu2");
+    
+        mu.value = mu.value < 0.1 ? 0.1 : mu.value;
+        mu2.value = mu2.value < 0.1 ? 0.1 : mu2.value;
+
         resetButton();
     }
 }
@@ -369,7 +382,9 @@ function disableSam2() {
     document.getElementsByClassName("subtitle")[0].classList.add("disabled");
 
     sam2enabled = false;
+    sensitivityMode = false;
     sam2 = new SAM(true);
+
     recorrido2 = [];
     resetButton();
 }
@@ -379,21 +394,39 @@ function enableSensitivity() {
     deltaInput.disabled = false;
     sensitivityMode = true;
     delta = parseFloat(deltaInput.value);
+    resetButton();
 }
 
-function disableSensitivity() {
+function disableSensitivity(reset=true) {
     let deltaInput = document.getElementById("delta");
     document.getElementById("Sensibilidad").checked = false;
     deltaInput.disabled = true;
     sensitivityMode = false;
+    tiempo = 0;
+    if(reset) {
+        resetButton();
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('sam2enabled').checked = false;
     document.getElementById('Sensibilidad').checked = false;
+
+    let valor = parseFloat(document.getElementById("fade").value);
+    valor = valor ? valor : 10000000;
+    lenRecorrido = valor;
     
     document.getElementsByTagName('input').forEach(element => {
-        element.addEventListener('keyup',paramsChange);
+        if(element.id != "delta") {
+            element.addEventListener('keyup',paramsChange);
+        }
+    });
+    document.getElementById("delta").addEventListener('keyup', (e) => {
+        if (e.keyCode === 13) {
+            delta = parseFloat(document.getElementById("delta").value);
+            if (!delta) { delta = 0.1;}
+            resetButton();
+        }
     });
     //mostrar sólo órbita
     document.getElementById("onlyOrbit").addEventListener('change', function() {
@@ -417,6 +450,11 @@ document.addEventListener("DOMContentLoaded", () => {
             disableSensitivity();
         }
     });
+    document.getElementById("fade").addEventListener('change', function() {
+        let valor = parseFloat(document.getElementById("fade").value);
+        valor = valor ? valor : 10000000;
+        lenRecorrido = valor;
+    });
 });
 
 //mover figura
@@ -424,16 +462,16 @@ const min=-50,max=50;
 document.addEventListener('keydown',(t) => {
     //izq
     if (t.key=="ArrowLeft") {
-        translationx -= 5;
+        translationx -= 10;
     //arriba
     } else if(t.key=="ArrowDown") {
-        translationy += 5;
+        translationy += 10;
     //dcha
     } else if(t.key=="ArrowRight") {
-        translationx += 5;
+        translationx += 10;
     //abajo
     } else if(t.key=="ArrowUp") {
-        translationy -= 5;
+        translationy -= 10;
     }
 });
 
