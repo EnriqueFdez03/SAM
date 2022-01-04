@@ -8,6 +8,27 @@ let sensitivityMode = false;
 let delta;
 let hideSAM = false;
 
+
+let startBtn, pauseBtn, restartBtn, zoom_in, zoom_out, arrows_img, scroll_img;
+function preload() {
+    startBtn = createImg('icons/play.svg', 'Start');
+    pauseBtn = createImg('icons/pause.svg', 'Pause');
+    restartBtn = createImg('icons/restart.svg', 'Restart');
+    zoom_in = createImg('icons/zoom-in.svg', 'Zoom In');
+    zoom_out = createImg('icons/zoom-out.svg', 'Zoom Out');
+
+    scroll_img = createImg('icons/scroll.png', 'Scroll');
+    scroll_img.style('-webkit-filter', 'grayscale(1) invert(1)');
+    arrows_img = createImg('icons/arrows.png', 'Arrows');
+    arrows_img.style('-webkit-filter', 'grayscale(1) invert(1)');
+    
+    startBtn.style('cursor','pointer');
+    pauseBtn.style('cursor','pointer');
+    restartBtn.style('cursor','pointer');
+    zoom_in.style('cursor','pointer');
+    zoom_out.style('cursor','pointer');
+}
+
 function setup() {
     createCanvas(windowWidth, windowHeight, WEBGL);
     sam = new SAM();
@@ -24,6 +45,15 @@ function setup2() {
 }
 
 function windowResized() {
+    pauseBtn.position(windowWidth/2 - 80, 15);
+    startBtn.position(windowWidth/2 - 80, 15);
+    restartBtn.position(windowWidth/2 - 40, 15);
+    zoom_in.position(windowWidth/2, 15);
+    zoom_out.position(windowWidth/2 + 40, 15);
+
+    scroll_img.position(windowWidth - 90, windowHeight - 90);
+    arrows_img.position(windowWidth - 160, windowHeight - 90);  
+
     resizeCanvas(windowWidth, windowHeight);
 }
 
@@ -147,10 +177,10 @@ function calculateNewPosition(){
         if (sam2enabled) {
             recorrido2.push([x2,y2]);
         }
-        if(recorrido.length>1000000){
-            recorrido.pop();
+        if(recorrido.length>10){
+            recorrido.shift();
             if (sam2enabled) {
-                recorrido2.pop();
+                recorrido2.shift();
             }
         }
     }
@@ -242,32 +272,40 @@ function creaBotones(){
     ambientLight(100, 100, 100);
     pointLight(250, 250, 250, 1000, 1000, 100);
     stroke(color(160, 160, 150));
-    start_button = createButton("Start");
-    start_button.mouseClicked(startStop);
-    start_button.position(650,100);
 
-    reset_button = createButton("Reset");
-    reset_button.position(700, 100);
-    reset_button.mousePressed(resetButton);
+    scroll_img.style('width','60px');
+    arrows_img.style('width','60px');
+    scroll_img.style('opacity','0.5');
+    arrows_img.style('opacity','0.5');
 
-    zoomIn_button = createButton("+");
-    zoomIn_button.position(750, 100);
-    zoomIn_button.mousePressed(zoomIn);
+    startBtn.style('-webkit-filter', 'grayscale(1) invert(1)');
+    restartBtn.style('-webkit-filter', 'grayscale(1) invert(1)');
+    pauseBtn.style('-webkit-filter', 'grayscale(1) invert(1)');
+    zoom_in.style('-webkit-filter', 'grayscale(1) invert(1)');
+    zoom_out.style('-webkit-filter', 'grayscale(1) invert(1)');
+    pauseBtn.style('display', 'none')
 
-    zoomOut_button = createButton("-");
-    zoomOut_button.position(780, 100);
-    zoomOut_button.mousePressed(zoomOut);
+    pauseBtn.position(windowWidth/2 - 80, 15).mousePressed(startStop);
+    startBtn.position(windowWidth/2 - 80, 15).mousePressed(startStop);
+    restartBtn.position(windowWidth/2 - 40, 15).mousePressed(resetButton);
+    zoom_in.position(windowWidth/2, 15).mousePressed(zoomIn);
+    zoom_out.position(windowWidth/2 + 40, 15).mousePressed(zoomOut);
+    scroll_img.position(windowWidth - 90, windowHeight - 90);
+    arrows_img.position(windowWidth - 160, windowHeight - 90);   
+
     pop();
 }
 
 // Button events
 function startStop() {
     if(actualizar) {
-      start_button.html("Start");
-      actualizar = false;
+        startBtn.style('display','inline');
+        pauseBtn.style('display','none');
+        actualizar = false;
     } else {
-      start_button.html("Stop");
-      actualizar = true;
+        startBtn.style('display','none');
+        pauseBtn.style('display','inline');
+        actualizar = true;
     }
 }
 
