@@ -5,6 +5,7 @@ let actualizar = false;
 let recorrido;
 let recorrido2;
 let sensitivityMode = false;
+let delta;
 let hideSAM = false;
 
 function setup() {
@@ -26,7 +27,7 @@ function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
 }
 
-let escala = 1;
+let escala = 1.5;
 let translationx = 0, translationy = 0;
 function draw() {
     scale(escala);
@@ -112,22 +113,33 @@ function calculateNewPosition(){
     if(actualizar){
         sam.iteracion();
     }
+
+
     let r = sam.r;
     let theta = sam.theta;
 
     let x = (r*sin(theta))*100;
     let y = (r*cos(theta))*100;
 
-    let x2, y2, r2, theta2;
+    let x2, y2, r2, theta2, distance;
     if (sam2enabled) {
         if(actualizar){
             sam2.iteracion();
         }
+
+        distance = sam.distance(sam2);
+        
         r2 = sam2.r;
         theta2 = sam2.theta;
 
         x2 = (r2*sin(theta2))*100;
         y2 = (r2*cos(theta2))*100;
+
+        if (distance > delta && sensitivityMode) {
+            console.log("hola")
+            disableSensitivity();
+            startStop();
+        }
     }
 
     if(actualizar){
@@ -171,7 +183,7 @@ function drawMasses(x,y,x2,y2,largo,largo2) {
     // Cuerda a la bola pequeña
     line(320+x, -79+y, 320, -79);
     // Cuerda a la bola grande
-    line(-23, -79+largo, -23, -79);
+    line(-23, -96.5+largo, -23, -79);
     pop();
     
 
@@ -181,7 +193,7 @@ function drawMasses(x,y,x2,y2,largo,largo2) {
         // Cuerda a la bola pequeña
         line(320+x2, -79+y2, 320, -79);
         // Cuerda a la bola grande
-        line(-23, -79+largo2, -23, -79);
+        line(-23, -96.5+largo2, -23, -79);
         pop();
 
         push();
@@ -275,15 +287,19 @@ function resetButton() {
 
         let epsilon = sam2.distance(sam);
         document.getElementById("epsilon").innerHTML = epsilon.toFixed(14);
+
+        if(sensitivityMode) {
+            delta = parseFloat(document.getElementById("delta").value);
+        }
     }
 }
 
 function zoomIn() {
-    escala = Math.min(3, escala+0.1);
+    escala = Math.min(4, escala+0.1);
 }
 
 function zoomOut() {
-    escala = Math.max(0.1, escala-0.1);
+    escala = Math.max(0.2, escala-0.1);
 }
 
 // si se cambian los parámetros del SAM...
@@ -296,7 +312,9 @@ function paramsChange(e) {
 //listeners de sam2..
 function enableSam2() {
     document.getElementsByTagName("input").forEach(e => {
-        e.disabled = false;
+        if (e.id != "delta") {
+            e.disabled = false;
+        }
     });
     document.getElementsByClassName("subtitle")[0].classList.remove("disabled");
 
@@ -316,6 +334,20 @@ function disableSam2() {
     sam2 = new SAM(true);
     recorrido2 = [];
     resetButton();
+}
+
+function enableSensitivity() {
+    let deltaInput = document.getElementById("delta");
+    deltaInput.disabled = false;
+    sensitivityMode = true;
+    delta = parseFloat(deltaInput.value);
+}
+
+function disableSensitivity() {
+    let deltaInput = document.getElementById("delta");
+    document.getElementById("Sensibilidad").checked = false;
+    deltaInput.disabled = true;
+    sensitivityMode = false;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -338,6 +370,13 @@ document.addEventListener("DOMContentLoaded", () => {
             enableSam2();
         } else {
             disableSam2();
+        }
+    });
+    document.getElementById("Sensibilidad").addEventListener('change', function() {
+        if(this.checked) {  
+            enableSensitivity();
+        } else {
+            disableSensitivity();
         }
     });
 });
