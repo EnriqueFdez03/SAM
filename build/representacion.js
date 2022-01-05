@@ -205,7 +205,18 @@ function calculateNewPosition(){
 
 function drawMasses(x,y,x2,y2,largo,largo2) {
     push();
-    ambientMaterial(color(255, 0, 0));
+    stroke(color(163, 73, 164));
+    // Cuerda a la bola pequeña
+    line(320+x, -79+y, 320, -79);
+    // Cuerda a la bola grande
+    line(-23, -96.5+largo, -23, -79);
+    pop();
+
+    push();
+    ambientLight(255,0,0);
+    ambientMaterial(color(255, 0, 0, 255));
+    stroke(255,0,0,255);
+    fill(255,0,0,255);
     //Pasar los parámetros del cálculo para actualizar las coordenadas de la bola "pequeña"
     circle(320+x, -79+y,20);
     pop();
@@ -214,14 +225,6 @@ function drawMasses(x,y,x2,y2,largo,largo2) {
     ambientMaterial(color(0, 0, 255));
     //Pasar los parámetros del cálculo para actualizar las coordenadas de la bola "grande"
     circle(-23,-79+largo,35);
-    pop();
-
-    push();
-    stroke(color(163, 73, 164));
-    // Cuerda a la bola pequeña
-    line(320+x, -79+y, 320, -79);
-    // Cuerda a la bola grande
-    line(-23, -96.5+largo, -23, -79);
     pop();
     
 

@@ -119,3 +119,12 @@ body{
     background-color: #000000;
 }
 
+#info{
+    width: fit-content;
+    position: absolute;
+    left: 47.5%;
+    right: 50%;
+}
+#time{
+    text-align: center;
+}
