@@ -145,15 +145,18 @@ function pulleyBase() {
 
 let lenRecorrido = 100000000;
 let tiempo = 0;
+let iteraciones = 0;
 let acumTheta = [];
 let acumR = [];
 let acumTheta2 = [];
 let acumR2 = [];
 let distancias = [];
+let lyapunov = [];
 function calculateNewPosition(){
     if(actualizar){
         sam.iteracion();
         tiempo += sam.pasos/1000;
+        iteraciones += 1;
         document.getElementById("time").innerHTML = `Tiempo: ${tiempo.toFixed(3)}s`;
     }
 
@@ -176,8 +179,9 @@ function calculateNewPosition(){
         }
 
         distance = sam.distance(sam2);
+
         document.getElementById("distance").innerHTML = `Distancia ${distance.toFixed(8)} metros`
-      
+        
         
         r2 = sam2.r;
         theta2 = sam2.theta;
@@ -198,6 +202,10 @@ function calculateNewPosition(){
         if (sam2enabled) {
             recorrido2.push([x2,y2]);
             acumTheta2.push(theta2);
+            //calculo lyapunov
+            if (epsilon < 0.01) {
+                calcLyapunov(epsilon,distance,iteraciones);
+            }
             acumR2.push(r2);
             distancias.push(distance);
         }
@@ -355,6 +363,11 @@ function showChart() {
         chart3.style.display = 'block';
         createChart(chart2,code=2);
         createChart(chart3,code=3);
+        if (epsilon < 0.01) {
+            let chart4 = document.getElementById('chart4');
+            chart4.style.display = 'block';
+            createChart(chart4,code=4);
+        }
     }
 }
 
@@ -362,7 +375,6 @@ function createChart(chart,code=1) {
     let n = recorrido.length;
     let y1,y2;
     
-
     if (code == 3) {
         var layout = {
             title: `Distancias entre SAM 1 y 2`,
@@ -372,6 +384,18 @@ function createChart(chart,code=1) {
         Plotly.newPlot( chart, [{
             x: [...Array(n).keys()],
             y: distancias }],
+            layout );
+        return;
+    }
+    if (code == 4) {
+        var layout = {
+            title: `Exponente de Lyapunov`,
+            yaxis: {title:'Lambda'},
+        }    
+
+        Plotly.newPlot( chart, [{
+            x: [...Array(n).keys()],
+            y: lyapunov }],
             layout );
         return;
     }
@@ -443,9 +467,11 @@ function startStop(showChrt = false) {
     }
 }
 
+let epsilon = 0;
 function resetButton() {
     hideChart();
     tiempo = 0;
+    iteraciones = 0;
 
     if(actualizar) {
       startStop();
@@ -461,6 +487,7 @@ function resetButton() {
     acumR2 = [];
     acumTheta2 = [];
     distancias = [];
+    lyapunov = [];
     creaBotones();
 
     if (sam2enabled) {
@@ -468,7 +495,7 @@ function resetButton() {
         sam2.getParams(true,pasos);
         recorrido2 = [];
 
-        let epsilon = sam2.distance(sam);
+        epsilon = sam2.distance(sam);
         document.getElementById("epsilon").innerHTML = epsilon.toFixed(14);
     }
 }
@@ -539,7 +566,6 @@ function disableSensitivity(reset=true) {
     document.getElementById("Sensibilidad").checked = false;
     deltaInput.disabled = true;
     sensitivityMode = false;
-    tiempo = 0;
     if(reset) {
         resetButton();
     }
@@ -624,5 +650,10 @@ document.addEventListener("wheel", (e) => {
     }
 });
 
-
+function calcLyapunov(epsilon, deltaT, n) {
+    if (epsilon==0 || deltaT == 0 || n == 0) {
+        lyapunov.push(0);
+    }
+    lyapunov.push(Math.log(deltaT/epsilon)/n);
+}
 
