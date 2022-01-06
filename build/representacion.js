@@ -68,7 +68,7 @@ let translationx = 0, translationy = 0;
 function draw() {
     scale(escala);
     background(0);
-    ambientLight(100, 100, 100);
+    ambientLight(200, 200, 200);
     pointLight(250, 250, 250, 1000, 1000, 100);
     translate(-150+translationx, 0+translationy);
 
@@ -237,9 +237,7 @@ function drawMasses(x,y,x2,y2,largo,largo2) {
     pop();
 
     push();
-    ambientLight(255,0,0);
-    ambientMaterial(color(255, 0, 0, 255));
-    stroke(255,0,0,255);
+    ambientMaterial(color( 0, 0, 255));
     fill(255,0,0,255);
     //Pasar los parámetros del cálculo para actualizar las coordenadas de la bola "pequeña"
     circle(320+x, -79+y,20);
@@ -280,7 +278,7 @@ function dibujaRecorrido(){
     push();
     beginShape();
     noFill();
-    stroke(color(200, 0, 0));
+    stroke(color(255, 0, 0));
     for(let i = 0; i < recorrido.length ; ++i){
         let pt = recorrido[i];
         vertex(320+pt[0], -79+pt[1]);
@@ -292,7 +290,7 @@ function dibujaRecorrido(){
         push();
         beginShape();
         noFill();
-        stroke(color(0, 200, 0));
+        stroke(color(0, 255, 0));
         for(let i = 0; i < recorrido.length ; ++i){
             let pt2 = recorrido2[i];
             vertex(320+pt2[0], -79+pt2[1]);
@@ -449,6 +447,7 @@ function hideChart() {
     document.getElementById('chart1').style.display = 'none';
     document.getElementById('chart2').style.display = 'none';
     document.getElementById('chart3').style.display = 'none';
+    document.getElementById('chart4').style.display = 'none';
 }
 
 // Button events
