@@ -4,7 +4,7 @@
   "description": "Simulación de SAM",
   "main": "app.js",
   "scripts": {
-      "start": "node app.js"
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/EnriqueFdez03/SAM#readme",
   "dependencies": {
+    "dotenv": "^10.0.0",
     "express": "^4.17.2"
   }
 }
