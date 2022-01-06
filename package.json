@@ -1,0 +1,22 @@
+{
+  "name": "swingingatwoodsmachine",
+  "version": "1.0.0",
+  "description": "Simulación de SAM",
+  "main": "app.js",
+  "scripts": {
+      "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EnriqueFdez03/SAM.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EnriqueFdez03/SAM/issues"
+  },
+  "homepage": "https://github.com/EnriqueFdez03/SAM#readme",
+  "dependencies": {
+    "express": "^4.17.2"
+  }
+}
