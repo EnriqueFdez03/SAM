@@ -9,13 +9,15 @@ let sensitivityMode = false;
 let hideSAM = false;
 
 
-let startBtn, pauseBtn, restartBtn, zoom_in, zoom_out, arrows_img, scroll_img;
+let startBtn, pauseBtn, restartBtn, zoom_in, zoom_out, arrows_img, scroll_img, chartBtn;
 function preload() {
+    // load buttons
     startBtn = createImg('icons/play.svg', 'Start');
     pauseBtn = createImg('icons/pause.svg', 'Pause');
     restartBtn = createImg('icons/restart.svg', 'Restart');
     zoom_in = createImg('icons/zoom-in.svg', 'Zoom In');
     zoom_out = createImg('icons/zoom-out.svg', 'Zoom Out');
+    chartBtn = createImg('icons/chart.svg', 'Chart');
 
     scroll_img = createImg('icons/scroll.png', 'Scroll');
     scroll_img.style('-webkit-filter', 'grayscale(1) invert(1)');
@@ -27,6 +29,7 @@ function preload() {
     restartBtn.style('cursor','pointer');
     zoom_in.style('cursor','pointer');
     zoom_out.style('cursor','pointer');
+    chartBtn.style('cursor','pointer');
 }
 
 function setup() {
@@ -45,16 +48,19 @@ function setup2() {
 }
 
 function windowResized() {
-    pauseBtn.position(windowWidth/2 - 80, 15);
-    startBtn.position(windowWidth/2 - 80, 15);
-    restartBtn.position(windowWidth/2 - 40, 15);
+    setBtnPositions();
+    resizeCanvas(windowWidth, windowHeight);
+}
+
+function setBtnPositions() {
+    pauseBtn.position(windowWidth/2 - 120, 15);
+    startBtn.position(windowWidth/2 - 120, 15);
+    restartBtn.position(windowWidth/2 - 80, 15);
+    chartBtn.position(windowWidth/2 - 40, 15);
     zoom_in.position(windowWidth/2, 15);
     zoom_out.position(windowWidth/2 + 40, 15);
-
     scroll_img.position(windowWidth - 90, windowHeight - 90);
-    arrows_img.position(windowWidth - 160, windowHeight - 90);  
-
-    resizeCanvas(windowWidth, windowHeight);
+    arrows_img.position(windowWidth - 160, windowHeight - 90);
 }
 
 let escala = 1.5;
@@ -139,10 +145,15 @@ function pulleyBase() {
 
 let lenRecorrido = 100000000;
 let tiempo = 0;
+let acumTheta = [];
+let acumR = [];
+let acumTheta2 = [];
+let acumR2 = [];
+let distancias = [];
 function calculateNewPosition(){
     if(actualizar){
         sam.iteracion();
-        tiempo += 0.01;
+        tiempo += sam.pasos/1000;
         document.getElementById("time").innerHTML = `Tiempo: ${tiempo.toFixed(3)}s`;
     }
 
@@ -150,23 +161,23 @@ function calculateNewPosition(){
     let r = sam.r;
     let theta = sam.theta;
 
+
     let x = (r*sin(theta))*100;
     let y = (r*cos(theta))*100;
 
     let x2, y2, r2, theta2, distance;
+
+    if(!sam2enabled) {
+        document.getElementById("distance").innerHTML = "";
+    }
     if (sam2enabled) {
         if(actualizar){
             sam2.iteracion();
-            if(!sensitivityMode) {
-                document.getElementById("distance").innerHTML = "";
-            }
         }
 
         distance = sam.distance(sam2);
-        
-        if (sensitivityMode) {
-            document.getElementById("distance").innerHTML = `Distancia ${distance.toFixed(4)} metros`
-        }
+        document.getElementById("distance").innerHTML = `Distancia ${distance.toFixed(8)} metros`
+      
         
         r2 = sam2.r;
         theta2 = sam2.theta;
@@ -182,8 +193,13 @@ function calculateNewPosition(){
 
     if(actualizar){
         recorrido.push([x, y]);
+        acumTheta.push(theta);
+        acumR.push(r);
         if (sam2enabled) {
             recorrido2.push([x2,y2]);
+            acumTheta2.push(theta2);
+            acumR2.push(r2);
+            distancias.push(distance);
         }
         if(recorrido.length>lenRecorrido){
             recorrido.shift();
@@ -294,21 +310,128 @@ function creaBotones(){
     pauseBtn.style('-webkit-filter', 'grayscale(1) invert(1)');
     zoom_in.style('-webkit-filter', 'grayscale(1) invert(1)');
     zoom_out.style('-webkit-filter', 'grayscale(1) invert(1)');
+    chartBtn.style('-webkit-filter', 'grayscale(1) invert(1)');
     pauseBtn.style('display', 'none')
 
-    pauseBtn.position(windowWidth/2 - 80, 15).mousePressed(startStop);
-    startBtn.position(windowWidth/2 - 80, 15).mousePressed(startStop);
-    restartBtn.position(windowWidth/2 - 40, 15).mousePressed(resetButton);
-    zoom_in.position(windowWidth/2, 15).mousePressed(zoomIn);
-    zoom_out.position(windowWidth/2 + 40, 15).mousePressed(zoomOut);
-    scroll_img.position(windowWidth - 90, windowHeight - 90);
-    arrows_img.position(windowWidth - 160, windowHeight - 90);   
+    setBtnPositions();
+
+    pauseBtn.mousePressed(startStop);
+    startBtn.mousePressed(startStop);
+    restartBtn.mousePressed(resetButton);
+    zoom_in.mousePressed(zoomIn);
+    zoom_out.mousePressed(zoomOut);
+    chartBtn.mousePressed(showChart);
 
     pop();
 }
 
+let showingChart = false;
+function showChart() {
+    if (showingChart) {
+        hideChart();
+        return;
+    }
+    if(actualizar) {
+        startStop(true);
+    } 
+    if(recorrido.length == 0) {
+        alert("No ha habido simulación")
+        return;
+    }
+    
+    showingChart = true;
+    document.getElementById("chartContainer").style.display = 'inline-block';
+
+    let chart1 = document.getElementById('chart1');
+    chart1.style.display = 'block';
+    
+    
+    createChart(chart1);
+
+    if (sam2enabled) {
+        let chart2 = document.getElementById('chart2');
+        let chart3 = document.getElementById('chart3');
+        chart2.style.display = 'block';
+        chart3.style.display = 'block';
+        createChart(chart2,code=2);
+        createChart(chart3,code=3);
+    }
+}
+
+function createChart(chart,code=1) {
+    let n = recorrido.length;
+    let y1,y2;
+    
+
+    if (code == 3) {
+        var layout = {
+            title: `Distancias entre SAM 1 y 2`,
+            yaxis: {title:'Distancia (metros)'},
+        }    
+
+        Plotly.newPlot( chart, [{
+            x: [...Array(n).keys()],
+            y: distancias }],
+            layout );
+        return;
+    }
+
+
+    if (code==1) {
+        y1 = acumTheta;
+        y2 = acumR;
+    } else  {
+        y1 = acumTheta2;
+        y2 = acumR2;
+    }
+    
+    let trace1 = {
+        x: [...Array(n).keys()],
+        y: y1,
+        name: 'Theta (rads)',
+        type: 'scatter'
+    };
+      
+    var trace2 = {
+        x: [...Array(n).keys()],
+        y: y2,
+        name: 'r (metros)',
+        yaxis: 'y2',
+        type: 'scatter'
+    };
+
+    var data = [trace1, trace2];
+
+    var layout = {
+    title: `SAM ${code}`,
+    yaxis: {title: 'theta (radianes)'},
+    yaxis2: {
+        title: 'r (metros)',
+        titlefont: {color: 'rgb(148, 103, 189)'},
+        tickfont: {color: 'rgb(148, 103, 189)'},
+        overlaying: 'y',
+        side: 'right'
+    }
+    
+    };
+    
+
+    Plotly.newPlot(chart, data, layout);
+}
+
+function hideChart() {
+    showingChart = false;
+    document.getElementById("chartContainer").style.display = 'none';
+    document.getElementById('chart1').style.display = 'none';
+    document.getElementById('chart2').style.display = 'none';
+    document.getElementById('chart3').style.display = 'none';
+}
+
 // Button events
-function startStop() {
+function startStop(showChrt = false) {
+    if(!showChrt) {
+        hideChart();
+    }
     if(actualizar) {
         startBtn.style('display','inline');
         pauseBtn.style('display','none');
@@ -321,19 +444,28 @@ function startStop() {
 }
 
 function resetButton() {
+    hideChart();
     tiempo = 0;
 
     if(actualizar) {
       startStop();
     }
+    let pasos = parseInt(document.getElementById("pasos").value)
+    pasos = pasos ? pasos : 10;
+
     sam = new SAM();
-    sam.getParams();
+    sam.getParams(false,pasos);
     recorrido = [];
+    acumTheta = [];
+    acumR = [];
+    acumR2 = [];
+    acumTheta2 = [];
+    distancias = [];
     creaBotones();
 
     if (sam2enabled) {
         sam2 = new SAM();
-        sam2.getParams(true);
+        sam2.getParams(true,pasos);
         recorrido2 = [];
 
         let epsilon = sam2.distance(sam);
@@ -342,11 +474,13 @@ function resetButton() {
 }
 
 function zoomIn() {
-    escala = Math.min(6, escala+0.1);
+    hideChart();
+    escala = Math.min(30, escala+0.2);
 }
 
 function zoomOut() {
-    escala = Math.max(0.2, escala-0.1);
+    hideChart();
+    escala = Math.max(0.2, escala-0.2);
 }
 
 // si se cambian los parámetros del SAM...

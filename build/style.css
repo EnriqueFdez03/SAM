@@ -31,22 +31,7 @@ body {
     color:rgba(221, 231, 228, 1);
 }
 
-#info {
-    color: white;
-    position: relative;
-    background-color: rgb(66, 66, 66);
-    border-radius: 3px;
-    display: inline-block;
-    padding: 5px 8px;
-    left: 41vw;
-    top: 90vh;
-    font-family: 'Lato', sans-serif;
-    color:rgba(221, 231, 228, 1);
-}
 
-#distance {
-    margin-left: 5px;
-}
 
 .title {
     text-align: center;
@@ -125,6 +110,43 @@ body{
     left: 47.5%;
     right: 50%;
 }
+
+.graphics {
+    width: 800px;
+    height: 500px;
+}
+
+#chartContainer {
+    overflow-y: auto;
+    position: absolute;
+    display: none;
+    top: 50%;
+    left: 50%;
+    margin: -250px 0 0 -400px;
+    height: 500px;
+}
+
 #time{
     text-align: center;
+    
+}
+
+#distance {
+    text-align: center;
+
+}
+
+#info {
+    color: white;
+    position: absolute;
+    background-color: rgb(66, 66, 66);
+    border-radius: 3px;
+    display: inline-block;
+    padding: 5px 8px;
+    font-family: 'Lato', sans-serif;
+    color:rgba(221, 231, 228, 1);
+    width: 250px;
+    left: 50%;
+    top: 85vh;
+    margin: 0 0 0 -125px;
 }

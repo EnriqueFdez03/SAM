@@ -3,7 +3,8 @@
     <head>
         <meta charset="UTF-8">
         <script src="p5/p5.js"></script>
-        <script src="representacion.js"></script>
+        <script src="https://cdn.plot.ly/plotly-2.8.3.min.js"></script>
+        <script src="representacion.js"></script>  
         <script src="SAM.js"></script>
         <link rel="stylesheet" href="style.css">
     </head>
@@ -15,6 +16,13 @@
             <div id="time"> Tiempo: 0s</div>
             <div id="distance"></div>
         </div>
+
+        <div id="chartContainer">
+            <div id ="chart1" class="graphics"></div>
+            <div id ="chart2" class="graphics"></div>
+            <div id ="chart3" class="graphics"></div>
+        </div>
+        
         <nav class="nav">
             <p class="title">SAM 1</p>
             <span class="nav__item">&mu; <input id="mu" type="text" placeholder="Masa contrapeso" value="2"/></span>
@@ -37,6 +45,7 @@
             <p class="title">AJUSTES</p>
             <span class="nav__item">Solo órbita: <input type="checkbox" id="onlyOrbit"></span>
             <span class="nav__item">Fade: <input style="width: 70%;" id="fade" type="text" placeholder="fade" value="10000000"/></span>
+            <span class="nav__item">Inexactitud: <input style="width: 43%;" id="pasos" type="text" placeholder="Menos es mejor" value="10"/></span>
         </nav>
     </body>
 </html>

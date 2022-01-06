@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/EnriqueFdez03/SAM",
   "dependencies": {
-    "gh-pages": "^3.2.3"
+    "gh-pages": "^3.2.3",
+    "plotly.js-dist": "^2.8.3"
   }
 }

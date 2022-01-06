@@ -34,7 +34,7 @@ class SAM{
         // pero más lento (obvio). Si se dejan los valores por defecto, retorna r y theta
         // tras 10ms
         this.dt = 0.001;
-        this.pasos = 10;
+        this.pasos = 1;
     }
 
     iteracion() {
@@ -59,7 +59,8 @@ class SAM{
     }
 
     // función que toma los parámetros de los inputs y los añade a las variables
-    getParams(second){
+    getParams(second,pasos=10){
+        this.pasos = pasos;
         let ids = ["mu","r","theta","dr","dtheta"]
         if (second) {
             ids = ids.map(id => `${id}2`);
