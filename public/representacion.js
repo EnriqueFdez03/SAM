@@ -143,7 +143,7 @@ function pulleyBase() {
     pop();
 }
 
-let lenRecorrido = 100000000;
+let lenRecorrido = 10000;
 let tiempo = 0;
 let iteraciones = 0;
 let acumTheta = [];
@@ -377,17 +377,17 @@ function showChart() {
 }
 
 function createChart(chart,code=1) {
-    let n = recorrido.length;
     let y1,y2;
     
     if (code == 3) {
         var layout = {
             title: `Distancias entre SAM 1 y 2`,
             yaxis: {title:'Distancia (metros)'},
+            xaxis: {title: `${sam.pasos} ms`}
         }    
 
         Plotly.newPlot( chart, [{
-            x: [...Array(n).keys()],
+            x: [...Array(distancias.length).keys()],
             y: distancias }],
             layout );
         return;
@@ -397,6 +397,7 @@ function createChart(chart,code=1) {
         var layout = {
             title: `Exponente de Lyapunov`,
             yaxis: {title:'Lambda'},
+            xaxis: {title:'dt (1 ms)'}
         }    
 
         Plotly.newPlot( chart, [{
@@ -414,7 +415,8 @@ function createChart(chart,code=1) {
         y1 = acumTheta2;
         y2 = acumR2;
     }
-    
+
+    let n = acumR.length;
     let trace1 = {
         x: [...Array(n).keys()],
         y: y1,
@@ -441,7 +443,8 @@ function createChart(chart,code=1) {
         tickfont: {color: 'rgb(148, 103, 189)'},
         overlaying: 'y',
         side: 'right'
-    }
+    },
+    xaxis: {title: `${sam.pasos} ms`}
     
     };
     
@@ -584,7 +587,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('Sensibilidad').checked = false;
 
     let valor = parseFloat(document.getElementById("fade").value);
-    valor = valor ? valor : 10000000;
+    valor = valor ? valor : 10000;
     lenRecorrido = valor;
     
     document.getElementsByTagName('input').forEach(element => {
@@ -623,7 +626,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     document.getElementById("fade").addEventListener('change', function() {
         let valor = parseFloat(document.getElementById("fade").value);
-        valor = valor ? valor : 10000000;
+        valor = valor ? valor : 10000;
         lenRecorrido = valor;
     });
 });
