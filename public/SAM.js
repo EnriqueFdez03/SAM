@@ -40,6 +40,7 @@ class SAM{
     iteracion() {
         // dt es 0.001 y por defecto 10 pasos. 10*0.001 = 0.01.
         // Luego tras el for se habrá producido el movimiento  de 0.01 segundos.
+        let acum = [];
         for(let i = 0; i < this.pasos; i++) {
             // obtención de theta
             this.dp_theta = -this.m*this.g*this.r*Math.sin(this.theta);
@@ -51,11 +52,12 @@ class SAM{
             this.p_r    = this.p_r + this.dp_r*this.dt;
             this.dr     = this.p_r/(this.m+this.M);
             this.r      = this.r + this.dr*this.dt; 
+            acum.push({'r_i':this.r,'t_i':this.theta})
         }
 
 
 
-        return {'r_i':this.r,'t_i':this.theta}
+        return {'r_pasos':this.r,'t_pasos':this.theta, 'acum':acum}
     }
 
     // función que toma los parámetros de los inputs y los añade a las variables

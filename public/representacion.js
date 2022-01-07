@@ -151,19 +151,22 @@ let acumR = [];
 let acumTheta2 = [];
 let acumR2 = [];
 let distancias = [];
-let lyapunov = [];
+let acumHistorial1 = [];
+let acumHistorial2 = [];
 function calculateNewPosition(){
+    let r,theta;
     if(actualizar){
-        sam.iteracion();
+        let acum = sam.iteracion().acum;
         tiempo += sam.pasos/1000;
         iteraciones += 1;
         document.getElementById("time").innerHTML = `Tiempo: ${tiempo.toFixed(3)}s`;
+        if (sam2enabled) {
+            acumHistorial1 = acumHistorial1.concat(acum);        
+        }
     }
 
-
-    let r = sam.r;
-    let theta = sam.theta;
-
+    r = sam.r;
+    theta = sam.theta;
 
     let x = (r*sin(theta))*100;
     let y = (r*cos(theta))*100;
@@ -175,9 +178,10 @@ function calculateNewPosition(){
     }
     if (sam2enabled) {
         if(actualizar){
-            sam2.iteracion();
+            let acum2 = sam2.iteracion().acum;
+            acumHistorial2 = acumHistorial2.concat(acum2);
         }
-
+        
         distance = sam.distance(sam2);
 
         document.getElementById("distance").innerHTML = `Distancia ${distance.toFixed(8)} metros`
@@ -202,10 +206,6 @@ function calculateNewPosition(){
         if (sam2enabled) {
             recorrido2.push([x2,y2]);
             acumTheta2.push(theta2);
-            //calculo lyapunov
-            if (epsilon < 0.01) {
-                calcLyapunov(epsilon,distance,iteraciones);
-            }
             acumR2.push(r2);
             distancias.push(distance);
         }
@@ -332,7 +332,14 @@ function creaBotones(){
 }
 
 let showingChart = false;
+let lyapunov;
 function showChart() {
+
+    //calculo lyapunov
+    if (epsilon < 0.01) {
+        lyapunov = calcLyapunov(epsilon);
+    }
+
     if (showingChart) {
         hideChart();
         return;
@@ -386,13 +393,14 @@ function createChart(chart,code=1) {
         return;
     }
     if (code == 4) {
+        let lyaN = lyapunov.length;
         var layout = {
             title: `Exponente de Lyapunov`,
             yaxis: {title:'Lambda'},
         }    
 
         Plotly.newPlot( chart, [{
-            x: [...Array(n).keys()],
+            x: [...Array(lyaN).keys()],
             y: lyapunov }],
             layout );
         return;
@@ -486,7 +494,8 @@ function resetButton() {
     acumR2 = [];
     acumTheta2 = [];
     distancias = [];
-    lyapunov = [];
+    acumHistorial1 = [];
+    acumHistorial2 = [];
     creaBotones();
 
     if (sam2enabled) {
@@ -649,10 +658,31 @@ document.addEventListener("wheel", (e) => {
     }
 });
 
-function calcLyapunov(epsilon, deltaT, n) {
-    if (epsilon==0 || deltaT == 0 || n == 0) {
-        lyapunov.push(0);
+function calcLyapunov(epsilon) {
+    let iteraciones = acumHistorial1.length;
+    let lyapunov = [];
+    let lyapunovAcum = 0;
+    for(let i = 1; i<=iteraciones; i++) {
+        let distancia = distanciaEuclidea(acumHistorial1[i-1],acumHistorial2[i-1]);
+        let lyi =  Math.log(distancia/epsilon);
+        lyapunovAcum = lyapunovAcum + lyi;
+        lyapunov.push(lyapunovAcum/i);
     }
-    lyapunov.push(Math.log(deltaT/epsilon)/n);
+    return lyapunov;
 }
 
+function distanciaEuclidea(pos1,pos2) {
+    let r1,theta1,r2,theta2;
+    r1 = pos1.r_i; 
+    theta1 = pos1.t_i;
+    r2 = pos2.r_i;
+    theta2 = pos2.t_i;
+
+    let x1 = (r1*Math.sin(theta1));
+    let y1 = (r1*Math.cos(theta1));
+
+    let x2 = (r2*Math.sin(theta2));
+    let y2 = (r2*Math.cos(theta2));
+
+    return Math.sqrt(Math.pow((x2-x1),2) + Math.pow((y2-y1),2))
+}
